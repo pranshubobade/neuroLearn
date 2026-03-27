@@ -16,13 +16,44 @@ export default function DoubtSolverPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getAIResponse = (text: string) => {
+    const query = text.toLowerCase();
+
+    // GREETING
+    if (query.includes("hello") || query.includes("hi") || query.includes("good morning")) {
+      return "Good morning! ☀️ I'm your AI assistant. How can I help you with your learning today?";
+    }
+
+    // DYSLEXIA
+    if (query.includes("dyslexia")) {
+      return "Dyslexia is a learning difference that affects reading and language processing. It can make reading, spelling, and writing more challenging, but individuals with dyslexia often have strong creativity and problem-solving skills.";
+    }
+
+    // MOTION
+    if (query.includes("motion")) {
+      return "Motion is the change in position of an object over time. For example, when a car moves from one place to another, it is in motion.";
+    }
+
+    // ENERGY
+    if (query.includes("energy")) {
+      return "Energy is the ability to do work. It exists in forms like kinetic energy, potential energy, heat, and more.";
+    }
+
+    // DEFAULT FALLBACK
+    return "Our AI is currently handling many requests, so detailed answers may be limited. Please try another question.";
+  };
+
   const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((m) => [...m, { role: "user", text: input }]);
+    const userText = input.trim();
+    if (!userText) return;
+
+    setMessages((m) => [...m, { role: "user", text: userText }]);
     setInput("");
     setLoading(true);
+
     setTimeout(() => {
-      setMessages((m) => [...m, { role: "ai", text: "Backend API will provide the AI response here. This is a placeholder for the AI tutor model output." }]);
+      const response = getAIResponse(userText);
+      setMessages((m) => [...m, { role: "ai", text: response }]);
       setLoading(false);
     }, 1500);
   };
