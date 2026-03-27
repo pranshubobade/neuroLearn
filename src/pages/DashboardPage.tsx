@@ -45,6 +45,7 @@ const DashboardPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("");
   const [accessibilityActive, setAccessibilityActive] = useState(false);
+  const [activeGif, setActiveGif] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -82,6 +83,22 @@ const DashboardPage = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const lesson = lessons[0];
+    if (!lesson) return;
+
+    const text = lesson.transcript?.toLowerCase() || "";
+    if (!text) return;
+
+    // Debug which GIF will be used
+    console.log("Active GIF source decision for transcript:", text);
+    if (text.includes("science") || text.includes("energy")) {
+      setActiveGif("/signs/music.gif");
+    } else {
+      setActiveGif(null);
+    }
+  }, [lessons]);
 
   useEffect(() => {
     return () => {
@@ -312,10 +329,26 @@ const DashboardPage = () => {
               )}
             </div>
             <div className="bg-card rounded-2xl p-6 border border-border">
-              <h3 className="text-lg font-semibold font-heading text-foreground mb-2">Learning Progress</h3>
-              <div className="py-10 text-center">
-                <BarChart3 className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Data will load here once backend API is connected.</p>
+              <div className="bg-black bg-opacity-80 rounded-xl p-4 flex flex-col items-center justify-center">
+                <h3 className="text-lg font-semibold mb-3 text-white">
+                  Sign Language Assist
+                </h3>
+
+                {activeGif ? (
+                  <img
+                    src={activeGif}
+                    alt="Sign Language"
+                    className="w-48 h-48 object-contain"
+                    onError={(e) => {
+                      console.error("GIF failed:", activeGif);
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-300">
+                    No sign detected
+                  </p>
+                )}
               </div>
             </div>
           </div>
